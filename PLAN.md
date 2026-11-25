@@ -30,7 +30,7 @@ src/
 │       ├── layout.tsx                # RequireAuth + Navbar shell (sidebar added in Prompt 2)
 │       └── dashboard/page.tsx        # Dashboard page
 ├── components/
-│   ├── common/                       # Brand, ThemeToggle, Loader, RequireAuth, PageHeader, EmptyState, ErrorState, ConfirmDialog, ImageUpload
+│   ├── common/                       # Brand, ThemeToggle, Loader, RequireAuth, PageHeader, EmptyState, ErrorState, ConfirmDialog, ImageUpload, Pagination, SearchInput
 │   ├── ui/                           # Button, Input, Label, Card, Spinner, FormField, Badge, Switch, Textarea, Skeleton, Modal
 │   ├── layout/                       # Navbar, Sidebar, DashboardShell
 │   └── providers/                    # Providers (Theme, QueryClient, Auth, Toaster)
@@ -41,16 +41,19 @@ src/
 ├── context/
 │   └── AuthContext.tsx               # Client-side auth state via GET /auth/me
 ├── hooks/
-│   └── useAuth.ts
+│   ├── useAuth.ts
+│   └── useDebouncedValue.ts          # 300ms debounce helper for search inputs
 └── lib/
     ├── utils.ts                      # cn() helper (clsx + tailwind-merge)
     ├── queryKeys.ts                  # Centralized TanStack Query keys
     └── api/
-        ├── types.ts                  # ApiResponse, ApiError, PaginationMeta, AdminUser, Banner, AdminStats
+        ├── types.ts                  # ApiResponse, ApiError, PaginationMeta, AdminUser, Banner, Blog, Recruitment, AdminStats
         ├── client.ts                 # Fetch wrapper (always credentials: 'include')
         ├── auth.ts                   # login, logout, getMe
         ├── stats.ts                  # getStats
-        └── banners.ts                # getAdminBanners, createBanner, updateBanner, deleteBanner
+        ├── banners.ts                # getAdminBanners, createBanner, updateBanner, deleteBanner
+        ├── blogs.ts                  # getBlogs, getBlogById, createBlog, updateBlog, deleteBlog
+        └── recruitments.ts           # getAdminRecruitments, createRecruitment, updateRecruitment, deleteRecruitment
 ```
 
 ---
@@ -100,6 +103,6 @@ src/
 | --- | --- | --- |
 | **Prompt 1** | Setup, Branding/Color System, Theme, API Layer, AuthContext, Login Page, Navbar, Placeholder Dashboard | **Done** |
 | **Prompt 2** | Dashboard Layout + Responsive Sidebar + Stats (`GET /admin/stats`) + Banner Management (CRUD + image upload) | **Done** |
-| **Prompt 3** | Blog Management (CRUD + search + pagination + image) + Recruitment Management (CRUD + toggle active) | Pending |
+| **Prompt 3** | Blog Management (CRUD + search + pagination + image) + Recruitment Management (CRUD + toggle active) | **Done** |
 | **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Polish, Responsive/A11y QA, Final Report | Pending |
 

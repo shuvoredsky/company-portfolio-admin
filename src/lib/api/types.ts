@@ -93,3 +93,44 @@ export interface AdminStats {
   };
   recentContacts: RecentContactSummary[];
 }
+
+export interface Blog {
+  _id: string;
+  title: string;
+  description: string;
+  image: CloudinaryImage;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BlogListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export interface Recruitment {
+  _id: string;
+  title: string;
+  description: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface RecruitmentListParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface CreateRecruitmentPayload {
+  title: string;
+  description: string;
+  isActive?: boolean;
+}
+
+export interface UpdateRecruitmentPayload {
+  title?: string;
+  description?: string;
+  isActive?: boolean;
+}
