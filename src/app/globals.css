@@ -1,26 +1,147 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   BRAND COLORS - EDIT HERE
+   Change ONLY these primary and secondary values to re-theme the entire app.
+   All other theme surfaces, borders, accents, and focus rings derive from them.
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-primary: #14532d;
+  --brand-secondary: #ecfdf5;
+}
+
+.dark {
+  --brand-primary: #4ade80;
+  --brand-secondary: #102a1d;
+}
+
+/* ==========================================================================
+   SEMANTIC TOKENS (Derived from Brand Colors)
+   ========================================================================== */
+:root {
+  --primary: var(--brand-primary);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: var(--brand-primary);
+
+  --background: color-mix(in srgb, var(--brand-secondary) 28%, #ffffff);
+  --foreground: #0c1f14;
+
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+
+  --muted: color-mix(in srgb, var(--brand-secondary) 72%, #f1f5f9);
+  --muted-foreground: #456050;
+
+  --accent: color-mix(in srgb, var(--brand-primary) 10%, #ffffff);
+  --accent-foreground: var(--brand-primary);
+
+  --border: color-mix(in srgb, var(--brand-primary) 14%, #e2e8f0);
+  --input: color-mix(in srgb, var(--brand-primary) 18%, #cbd5e1);
+  --ring: var(--brand-primary);
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #15803d;
+  --success-foreground: #ffffff;
+
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --primary: var(--brand-primary);
+  --primary-foreground: #052e16;
+
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: #dcfce7;
+
+  --background: #07130d;
+  --foreground: #edf7f0;
+
+  --card: #0c1d14;
+  --card-foreground: var(--foreground);
+
+  --popover: #0e2318;
+  --popover-foreground: var(--foreground);
+
+  --muted: color-mix(in srgb, var(--brand-secondary) 85%, #0a1610);
+  --muted-foreground: #96b4a2;
+
+  --accent: color-mix(in srgb, var(--brand-primary) 16%, var(--card));
+  --accent-foreground: #dcfce7;
+
+  --border: color-mix(in srgb, var(--brand-primary) 18%, #163022);
+  --input: color-mix(in srgb, var(--brand-primary) 24%, #1a3a29);
+  --ring: var(--brand-primary);
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --success: #22c55e;
+  --success-foreground: #052e16;
+
+  --warning: #f59e0b;
+  --warning-foreground: #1c1917;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-sans-app), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
+html,
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
