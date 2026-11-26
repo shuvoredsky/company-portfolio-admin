@@ -14,10 +14,10 @@ function buildBlogQueryString(params: BlogListParams): string {
 
 export const blogsApi = {
   getBlogs: (params: BlogListParams = {}): Promise<ApiResponse<Blog[]>> =>
-    api.get<Blog[]>(`/blogs${buildBlogQueryString(params)}`),
+    api.get<Blog[]>(`/blogs/admin/all${buildBlogQueryString(params)}`),
 
   getBlogById: (id: string): Promise<ApiResponse<Blog>> =>
-    api.get<Blog>(`/blogs/${id}`),
+    api.get<Blog>(`/blogs/admin/${id}`),
 
   createBlog: (formData: FormData): Promise<ApiResponse<Blog>> =>
     api.post<Blog>('/blogs', formData),

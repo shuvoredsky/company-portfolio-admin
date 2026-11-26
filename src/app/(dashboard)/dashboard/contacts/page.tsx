@@ -3,6 +3,9 @@ import { Mail } from 'lucide-react';
 import { EmptyState } from '@/components/common/EmptyState';
 import { PageHeader } from '@/components/common/PageHeader';
 
+// Auth is client-side via RequireAuth; opt out of Next.js instant-navigation validation.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: 'Contact Messages',
 };

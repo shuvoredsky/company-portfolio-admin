@@ -37,3 +37,4 @@ export const recruitmentsApi = {
   deleteRecruitment: (id: string): Promise<ApiResponse<Recruitment>> =>
     api.delete<Recruitment>(`/recruitments/${id}`),
 };
+

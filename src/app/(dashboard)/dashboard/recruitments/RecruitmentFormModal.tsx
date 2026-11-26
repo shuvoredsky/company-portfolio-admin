@@ -34,6 +34,7 @@ export interface RecruitmentFormModalProps {
   open: boolean;
   onClose: () => void;
   recruitment: Recruitment | null;
+  onCreated?: () => void;
 }
 
 const VALID_FIELD_NAMES = new Set<keyof RecruitmentFormValues>([
@@ -46,6 +47,7 @@ export function RecruitmentFormModal({
   open,
   onClose,
   recruitment,
+  onCreated,
 }: RecruitmentFormModalProps) {
   const isEditing = Boolean(recruitment);
   const queryClient = useQueryClient();
@@ -74,17 +76,22 @@ export function RecruitmentFormModal({
       }
       return recruitmentsApi.createRecruitment(values);
     },
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
+      if (!isEditing) {
+        onCreated?.();
+      }
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.recruitments.all,
+        }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin }),
+      ]);
       toast.success(
         res.message ||
           (isEditing
             ? 'Recruitment post updated successfully'
             : 'Recruitment post created successfully'),
       );
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.recruitments.all,
-      });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin });
       onClose();
     },
     onError: (err) => {
@@ -208,3 +215,4 @@ export function RecruitmentFormModal({
     </Modal>
   );
 }
+

@@ -74,15 +74,17 @@ export function BlogsManager() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => blogsApi.deleteBlog(id),
-    onSuccess: (res) => {
-      toast.success(res.message || 'Blog post deleted successfully');
+    onSuccess: async (res) => {
       const wasLastOnPage = blogs.length === 1 && page > 1;
-      setDeletingBlog(null);
       if (wasLastOnPage) {
         setPage((prev) => Math.max(1, prev - 1));
       }
-      void queryClient.invalidateQueries({ queryKey: queryKeys.blogs.all });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.blogs.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin }),
+      ]);
+      toast.success(res.message || 'Blog post deleted successfully');
+      setDeletingBlog(null);
     },
     onError: (err) => {
       toast.error(
@@ -259,6 +261,7 @@ export function BlogsManager() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         blog={editingBlog}
+        onCreated={() => setPage(1)}
       />
 
       <ConfirmDialog
@@ -277,3 +280,4 @@ export function BlogsManager() {
     </section>
   );
 }
+

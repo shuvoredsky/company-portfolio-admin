@@ -17,26 +17,6 @@ import { ApiError, Banner } from '@/lib/api/types';
 import { queryKeys } from '@/lib/queryKeys';
 
 const bannerFormSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Title is required')
-    .max(200, 'Title must not exceed 200 characters'),
-  subtitle: z
-    .string()
-    .trim()
-    .max(500, 'Subtitle must not exceed 500 characters')
-    .optional(),
-  ctaText: z
-    .string()
-    .trim()
-    .max(100, 'CTA text must not exceed 100 characters')
-    .optional(),
-  ctaLink: z
-    .string()
-    .trim()
-    .max(500, 'CTA link must not exceed 500 characters')
-    .optional(),
   order: z.number().int('Order must be a whole number'),
   isActive: z.boolean(),
 });
@@ -50,10 +30,6 @@ export interface BannerFormModalProps {
 }
 
 const VALID_FIELD_NAMES = new Set<keyof BannerFormValues>([
-  'title',
-  'subtitle',
-  'ctaText',
-  'ctaLink',
   'order',
   'isActive',
 ]);
@@ -77,10 +53,6 @@ export function BannerFormModal({
   } = useForm<BannerFormValues>({
     resolver: zodResolver(bannerFormSchema),
     defaultValues: {
-      title: banner?.title ?? '',
-      subtitle: banner?.subtitle ?? '',
-      ctaText: banner?.ctaText ?? '',
-      ctaLink: banner?.ctaLink ?? '',
       order: banner?.order ?? 0,
       isActive: banner?.isActive ?? true,
     },
@@ -93,19 +65,21 @@ export function BannerFormModal({
       }
       return bannersApi.createBanner(formData);
     },
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.banners.adminList,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.stats.admin,
+        }),
+      ]);
       toast.success(
         res.message ||
           (isEditing
             ? 'Banner updated successfully'
             : 'Banner created successfully'),
       );
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.banners.adminList,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.stats.admin,
-      });
       onClose();
     },
     onError: (err) => {
@@ -139,16 +113,6 @@ export function BannerFormModal({
     setImageError(null);
 
     const formData = new FormData();
-    formData.append('title', values.title);
-    if (values.subtitle !== undefined) {
-      formData.append('subtitle', values.subtitle);
-    }
-    if (values.ctaText !== undefined) {
-      formData.append('ctaText', values.ctaText);
-    }
-    if (values.ctaLink !== undefined) {
-      formData.append('ctaLink', values.ctaLink);
-    }
     formData.append('order', String(values.order));
     formData.append('isActive', String(values.isActive));
 
@@ -163,13 +127,13 @@ export function BannerFormModal({
     <Modal
       open={open}
       onClose={onClose}
-      title={isEditing ? 'Edit Banner' : 'Add Banner'}
+      title={isEditing ? `Edit Banner #${banner?.order ?? 0}` : 'Add Banner'}
       description={
         isEditing
-          ? 'Update banner details or replace the banner image.'
-          : 'Upload an image and configure your new homepage banner.'
+          ? 'Replace the banner image or update its display order and visibility.'
+          : 'Upload an image for the homepage banner carousel.'
       }
-      size="lg"
+      size="md"
       disableClose={mutation.isPending}
       footer={
         <>
@@ -209,7 +173,7 @@ export function BannerFormModal({
           hint={
             isEditing
               ? 'Leave unchanged to keep the current image, or pick a new image to replace it.'
-              : 'Recommended landscape 16:9 image (max 5MB).'
+              : 'Recommended landscape 16:9 image (JPEG, PNG, or WebP, max 5MB).'
           }
         >
           <ImageUpload
@@ -224,65 +188,6 @@ export function BannerFormModal({
             disabled={mutation.isPending}
           />
         </FormField>
-
-        <FormField
-          id="banner-title"
-          label="Title"
-          required
-          error={errors.title?.message}
-        >
-          <Input
-            id="banner-title"
-            placeholder="Sustainable Agriculture for Tomorrow"
-            hasError={Boolean(errors.title)}
-            disabled={mutation.isPending}
-            {...register('title')}
-          />
-        </FormField>
-
-        <FormField
-          id="banner-subtitle"
-          label="Subtitle"
-          error={errors.subtitle?.message}
-        >
-          <Input
-            id="banner-subtitle"
-            placeholder="Optional supporting headline"
-            hasError={Boolean(errors.subtitle)}
-            disabled={mutation.isPending}
-            {...register('subtitle')}
-          />
-        </FormField>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField
-            id="banner-cta-text"
-            label="CTA Button Text"
-            error={errors.ctaText?.message}
-          >
-            <Input
-              id="banner-cta-text"
-              placeholder="Explore Solutions"
-              hasError={Boolean(errors.ctaText)}
-              disabled={mutation.isPending}
-              {...register('ctaText')}
-            />
-          </FormField>
-
-          <FormField
-            id="banner-cta-link"
-            label="CTA Button Link"
-            error={errors.ctaLink?.message}
-          >
-            <Input
-              id="banner-cta-link"
-              placeholder="/contact"
-              hasError={Boolean(errors.ctaLink)}
-              disabled={mutation.isPending}
-              {...register('ctaLink')}
-            />
-          </FormField>
-        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-end">
           <FormField
@@ -312,7 +217,9 @@ export function BannerFormModal({
                   onCheckedChange={field.onChange}
                   disabled={mutation.isPending}
                   label={
-                    field.value ? 'Active (visible on site)' : 'Inactive (hidden)'
+                    field.value
+                      ? 'Active (visible on site)'
+                      : 'Inactive (hidden)'
                   }
                 />
               )}

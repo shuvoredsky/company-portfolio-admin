@@ -63,6 +63,7 @@ export async function request<T>(
       headers,
       body: requestBody,
       credentials: 'include',
+      cache: 'no-store',
     });
   } catch {
     throw new ApiError(0, 'Cannot reach the server. Please check your connection.');

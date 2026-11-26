@@ -63,11 +63,7 @@ export interface CloudinaryImage {
 
 export interface Banner {
   _id: string;
-  title: string;
-  subtitle?: string;
   image: CloudinaryImage;
-  ctaText?: string;
-  ctaLink?: string;
   order: number;
   isActive: boolean;
   createdAt?: string;

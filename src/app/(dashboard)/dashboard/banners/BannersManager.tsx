@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Switch } from '@/components/ui/Switch';
+import { siteConfig } from '@/config/site';
 import { bannersApi } from '@/lib/api/banners';
 import { ApiError, ApiResponse, Banner } from '@/lib/api/types';
 import { queryKeys } from '@/lib/queryKeys';
@@ -75,9 +76,9 @@ export function BannersManager() {
           : 'Failed to update banner status',
       );
     },
-    onSettled: () => {
+    onSettled: async () => {
       setTogglingId(null);
-      void queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.banners.adminList,
       });
     },
@@ -85,15 +86,17 @@ export function BannersManager() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => bannersApi.deleteBanner(id),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.banners.adminList,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.stats.admin,
+        }),
+      ]);
       toast.success(res.message || 'Banner deleted successfully');
       setDeletingBanner(null);
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.banners.adminList,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.stats.admin,
-      });
     },
     onError: (err) => {
       toast.error(
@@ -116,7 +119,7 @@ export function BannersManager() {
     <section className="space-y-6">
       <PageHeader
         title="Banners"
-        description="Manage homepage hero banners, display ordering, and visibility."
+        description="Manage homepage banner images, display ordering, and visibility."
         actions={
           <Button onClick={handleOpenCreate}>
             <Plus className="h-4 w-4" aria-hidden="true" />
@@ -140,13 +143,9 @@ export function BannersManager() {
           {Array.from({ length: 3 }).map((_, idx) => (
             <Card key={idx} className="overflow-hidden">
               <Skeleton className="aspect-[16/9] w-full rounded-none" />
-              <CardContent className="space-y-3 p-5">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <div className="flex items-center justify-between pt-2">
-                  <Skeleton className="h-6 w-20 rounded-full" />
-                  <Skeleton className="h-9 w-24 rounded-xl" />
-                </div>
+              <CardContent className="flex items-center justify-between p-4">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-9 w-24 rounded-xl" />
               </CardContent>
             </Card>
           ))}
@@ -155,7 +154,7 @@ export function BannersManager() {
         <EmptyState
           icon={ImageIcon}
           title="No banners yet"
-          description="Create your first homepage banner to highlight your company on the public website."
+          description="Upload your first homepage banner image to display on the public website."
           action={
             <Button onClick={handleOpenCreate}>
               <Plus className="h-4 w-4" aria-hidden="true" />
@@ -165,42 +164,35 @@ export function BannersManager() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {banners.map((banner) => (
-            <Card
-              key={banner._id}
-              className="flex flex-col overflow-hidden transition-shadow hover:shadow-md"
-            >
-              <div className="relative aspect-[16/9] w-full bg-muted">
-                <Image
-                  src={banner.image.url}
-                  alt={banner.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                  className="object-cover"
-                />
-                <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <Badge variant={banner.isActive ? 'success' : 'secondary'}>
-                    {banner.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                  <Badge variant="outline" className="bg-card/90 backdrop-blur-xs">
-                    Order #{banner.order}
-                  </Badge>
-                </div>
-              </div>
-
-              <CardContent className="flex flex-1 flex-col justify-between gap-4 p-5">
-                <div className="space-y-1.5">
-                  <h2 className="line-clamp-1 text-base font-semibold text-card-foreground">
-                    {banner.title}
-                  </h2>
-                  {banner.subtitle && (
-                    <p className="line-clamp-2 text-sm text-muted-foreground">
-                      {banner.subtitle}
-                    </p>
-                  )}
+          {banners.map((banner) => {
+            const label = `Banner #${banner.order}`;
+            return (
+              <Card
+                key={banner._id}
+                className="flex flex-col overflow-hidden transition-shadow hover:shadow-md"
+              >
+                <div className="relative aspect-[16/9] w-full bg-muted">
+                  <Image
+                    src={banner.image.url}
+                    alt={`${siteConfig.brandName} — ${label}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute top-3 left-3 flex items-center gap-2">
+                    <Badge variant={banner.isActive ? 'success' : 'secondary'}>
+                      {banner.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="bg-card/90 backdrop-blur-xs"
+                    >
+                      {label}
+                    </Badge>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3.5">
+                <CardContent className="flex flex-wrap items-center justify-between gap-2 p-4">
                   <Switch
                     checked={banner.isActive}
                     disabled={togglingId === banner._id}
@@ -218,7 +210,7 @@ export function BannersManager() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenEdit(banner)}
-                      aria-label={`Edit ${banner.title}`}
+                      aria-label={`Edit ${label}`}
                     >
                       <Pencil className="h-4 w-4" aria-hidden="true" />
                       Edit
@@ -227,16 +219,16 @@ export function BannersManager() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeletingBanner(banner)}
-                      aria-label={`Delete ${banner.title}`}
+                      aria-label={`Delete ${label}`}
                       className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
@@ -256,7 +248,7 @@ export function BannersManager() {
           }
         }}
         title="Delete banner?"
-        description={`Are you sure you want to delete "${deletingBanner?.title ?? ''}"? This action cannot be undone and its image will also be permanently removed from Cloudinary.`}
+        description={`Are you sure you want to delete Banner #${deletingBanner?.order ?? 0}? This action cannot be undone and its image will also be permanently removed from Cloudinary.`}
         confirmLabel="Delete Banner"
         isLoading={deleteMutation.isPending}
       />

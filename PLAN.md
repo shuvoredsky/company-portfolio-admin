@@ -81,13 +81,16 @@ src/
 ## 5. API Layer & Auth Architecture
 - **API Wrapper (`src/lib/api/client.ts`):**
   - Every API call goes through `src/lib/api/*`.
-  - Always passes `credentials: 'include'` so the browser sends/receives the HTTP-only `accessToken` cookie.
+  - Always passes `credentials: 'include'` and `cache: 'no-store'` so the browser sends/receives the HTTP-only `accessToken` cookie and never serves stale cached responses to the admin UI.
+  - Admin screens always call `/admin/*` endpoints (`Cache-Control: no-store`), never public cached endpoints.
   - Sends JSON by default and leaves `Content-Type` unset for `FormData` uploads.
   - Normalizes backend `{ success, message, data, meta? }` and throws typed `ApiError(status, message, errorSources)`.
   - Exposes a 401 unauthorized callback so `AuthContext` clears session state and redirects to `/login` without loops.
 - **Why Auth Protection is Client-Side:**
   - The `accessToken` cookie is `HttpOnly` and issued by the backend API domain. In production, Next.js middleware on the admin domain cannot read cookies scoped to the API domain.
-  - `AuthContext` calls `GET /api/v1/auth/me` once via TanStack Query as the source of truth, and `<RequireAuth>` guards `(dashboard)` routes. No tokens or user records are ever stored in `localStorage`, `sessionStorage`, or readable cookies.
+  - `AuthContext` calls `GET /api/v1/auth/me` once via TanStack Query as the source of truth, and `<RequireAuth>` guards `(dashboard)` routes. Auth-gated dashboard routes export `export const instant = false` so Next.js 16 Cache Components skips instant-navigation validation cleanly. No tokens or user records are ever stored in `localStorage`, `sessionStorage`, or readable cookies.
+- **Banner Design Rule:**
+  - Banners are **image-only** (`image`, `order`, `isActive`). The client frontend renders banner images only (no title, subtitle, or CTA button overlay).
 
 ---
 

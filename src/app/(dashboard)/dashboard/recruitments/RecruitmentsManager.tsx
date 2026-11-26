@@ -104,17 +104,19 @@ export function RecruitmentsManager() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => recruitmentsApi.deleteRecruitment(id),
-    onSuccess: (res) => {
-      toast.success(res.message || 'Recruitment post deleted successfully');
+    onSuccess: async (res) => {
       const wasLastOnPage = recruitments.length === 1 && page > 1;
-      setDeletingItem(null);
       if (wasLastOnPage) {
         setPage((prev) => Math.max(1, prev - 1));
       }
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.recruitments.all,
-      });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.recruitments.all,
+        }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin }),
+      ]);
+      toast.success(res.message || 'Recruitment post deleted successfully');
+      setDeletingItem(null);
     },
     onError: (err) => {
       toast.error(
@@ -273,6 +275,7 @@ export function RecruitmentsManager() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         recruitment={editingItem}
+        onCreated={() => setPage(1)}
       />
 
       <ConfirmDialog
@@ -291,3 +294,4 @@ export function RecruitmentsManager() {
     </section>
   );
 }
+

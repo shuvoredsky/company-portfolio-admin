@@ -34,6 +34,7 @@ export interface BlogFormModalProps {
   open: boolean;
   onClose: () => void;
   blog: Blog | null;
+  onCreated?: () => void;
 }
 
 const VALID_FIELD_NAMES = new Set<keyof BlogFormValues>([
@@ -41,7 +42,12 @@ const VALID_FIELD_NAMES = new Set<keyof BlogFormValues>([
   'description',
 ]);
 
-export function BlogFormModal({ open, onClose, blog }: BlogFormModalProps) {
+export function BlogFormModal({
+  open,
+  onClose,
+  blog,
+  onCreated,
+}: BlogFormModalProps) {
   const isEditing = Boolean(blog);
   const queryClient = useQueryClient();
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -70,15 +76,20 @@ export function BlogFormModal({ open, onClose, blog }: BlogFormModalProps) {
       }
       return blogsApi.createBlog(formData);
     },
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
+      if (!isEditing) {
+        onCreated?.();
+      }
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.blogs.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin }),
+      ]);
       toast.success(
         res.message ||
           (isEditing
             ? 'Blog post updated successfully'
             : 'Blog post created successfully'),
       );
-      void queryClient.invalidateQueries({ queryKey: queryKeys.blogs.all });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.stats.admin });
       onClose();
     },
     onError: (err) => {
@@ -222,3 +233,4 @@ export function BlogFormModal({ open, onClose, blog }: BlogFormModalProps) {
     </Modal>
   );
 }
+
