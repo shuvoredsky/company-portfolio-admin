@@ -198,28 +198,30 @@ export function DashboardOverview() {
               ) : (
                 <ul className="divide-y divide-border">
                   {stats.recentContacts.map((contact) => (
-                    <li
-                      key={contact.id}
-                      className="flex flex-col gap-2 py-3.5 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">
-                          {contact.name}
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {contact.email} &middot; {contact.country}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2.5">
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(contact.createdAt)}
-                        </span>
-                        <Badge
-                          variant={contact.isRead ? 'secondary' : 'success'}
-                        >
-                          {contact.isRead ? 'Read' : 'Unread'}
-                        </Badge>
-                      </div>
+                    <li key={contact.id} className="py-1 first:pt-0 last:pb-0">
+                      <Link
+                        href={`/dashboard/contacts?open=${contact.id}`}
+                        className="flex flex-col gap-2 rounded-xl px-2 py-2.5 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">
+                            {contact.name}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {contact.email} &middot; {contact.country}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2.5">
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(contact.createdAt)}
+                          </span>
+                          <Badge
+                            variant={contact.isRead ? 'secondary' : 'success'}
+                          >
+                            {contact.isRead ? 'Read' : 'Unread'}
+                          </Badge>
+                        </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>

@@ -1,4 +1,8 @@
-import { BlogListParams, RecruitmentListParams } from '@/lib/api/types';
+import {
+  BlogListParams,
+  ContactListParams,
+  RecruitmentListParams,
+} from '@/lib/api/types';
 
 export const queryKeys = {
   auth: {
@@ -23,5 +27,7 @@ export const queryKeys = {
   },
   contacts: {
     all: ['contacts'] as const,
+    list: (params: ContactListParams) => ['contacts', 'list', params] as const,
+    detail: (id: string) => ['contacts', 'detail', id] as const,
   },
 } as const;

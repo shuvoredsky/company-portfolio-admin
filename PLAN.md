@@ -52,8 +52,9 @@ src/
         ├── auth.ts                   # login, logout, getMe
         ├── stats.ts                  # getStats
         ├── banners.ts                # getAdminBanners, createBanner, updateBanner, deleteBanner
-        ├── blogs.ts                  # getBlogs, getBlogById, createBlog, updateBlog, deleteBlog
-        └── recruitments.ts           # getAdminRecruitments, createRecruitment, updateRecruitment, deleteRecruitment
+        ├── blogs.ts                  # getBlogs (/admin/all), getBlogById (/admin/:id), createBlog, updateBlog, deleteBlog
+        ├── recruitments.ts           # getAdminRecruitments, createRecruitment, updateRecruitment, deleteRecruitment
+        └── contacts.ts               # getContacts, getContactById, markContactRead, deleteContact
 ```
 
 ---
@@ -107,5 +108,5 @@ src/
 | **Prompt 1** | Setup, Branding/Color System, Theme, API Layer, AuthContext, Login Page, Navbar, Placeholder Dashboard | **Done** |
 | **Prompt 2** | Dashboard Layout + Responsive Sidebar + Stats (`GET /admin/stats`) + Banner Management (CRUD + image upload) | **Done** |
 | **Prompt 3** | Blog Management (CRUD + search + pagination + image) + Recruitment Management (CRUD + toggle active) | **Done** |
-| **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Polish, Responsive/A11y QA, Final Report | Pending |
+| **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Banner Recheck, Polish, Responsive/A11y QA, Final Report | **Done** |
 

@@ -98,7 +98,20 @@ export function BannersManager() {
       toast.success(res.message || 'Banner deleted successfully');
       setDeletingBanner(null);
     },
-    onError: (err) => {
+    onError: async (err) => {
+      if (err instanceof ApiError && err.status === 404) {
+        toast.error('This banner was already deleted. Refreshing list...');
+        setDeletingBanner(null);
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.banners.adminList,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.stats.admin,
+          }),
+        ]);
+        return;
+      }
       toast.error(
         err instanceof ApiError ? err.message : 'Failed to delete banner',
       );

@@ -59,3 +59,18 @@ Edit **only** the `BRAND COLORS - EDIT HERE` block at the top of `src/app/global
 }
 ```
 All accents, borders, focus rings, muted surfaces, and buttons derive automatically from these two variables in both light and dark modes.
+
+
+## Deployment (Vercel)
+
+### Environment Variables
+- `NEXT_PUBLIC_API_URL` — Full HTTPS base URL of the deployed backend API (e.g., `https://api.example.com/api/v1`).
+
+### Build & Start Commands
+- **Build:** `npm run build`
+- **Start:** `npm start` (port `3001` locally; Vercel manages ports automatically)
+
+### Backend CORS & Cookie Requirements
+1. On `company-server`, add the deployed admin origin (e.g., `https://admin.example.com`) to `ADMIN_URL` (comma-separated origins supported for preview deployments).
+2. Both the admin frontend and the backend API **must run on HTTPS** in production because `accessToken` is issued with `HttpOnly; Secure; SameSite=None`.
+3. **Important — Shared Parent Domain Recommendation:** If the admin app and API are hosted on completely different registrable domains (for example `my-admin.vercel.app` and `my-api.onrender.com`), modern browsers with strict third-party cookie blocking (Safari ITP, Firefox ETP, Chrome privacy modes) can block the `accessToken` cookie and break login. For reliable production sessions, deploy both under a **shared parent domain** (e.g., `admin.example.com` and `api.example.com`).

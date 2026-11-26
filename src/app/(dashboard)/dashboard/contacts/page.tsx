@@ -1,7 +1,7 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { Mail } from 'lucide-react';
-import { EmptyState } from '@/components/common/EmptyState';
-import { PageHeader } from '@/components/common/PageHeader';
+import { Loader } from '@/components/common/Loader';
+import { ContactsManager } from './ContactsManager';
 
 // Auth is client-side via RequireAuth; opt out of Next.js instant-navigation validation.
 export const instant = false;
@@ -10,19 +10,10 @@ export const metadata: Metadata = {
   title: 'Contact Messages',
 };
 
-export default function ContactsPlaceholderPage() {
+export default function ContactsPage() {
   return (
-    <section className="space-y-6">
-      <PageHeader
-        title="Contact Messages"
-        description="Review and manage visitor inquiries."
-      />
-      <EmptyState
-        icon={Mail}
-        title="Coming in the next step"
-        description="Contact inbox with read/unread filters, search, and detail view will be implemented in Prompt 4."
-      />
-    </section>
+    <Suspense fallback={<Loader label="Loading messages..." />}>
+      <ContactsManager />
+    </Suspense>
   );
 }
-

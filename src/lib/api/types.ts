@@ -130,3 +130,22 @@ export interface UpdateRecruitmentPayload {
   description?: string;
   isActive?: boolean;
 }
+
+export interface ContactMessage {
+  _id: string;
+  name: string;
+  country: string;
+  phone: string;
+  email: string;
+  message: string;
+  isRead: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ContactListParams {
+  page?: number;
+  limit?: number;
+  isRead?: boolean;
+  search?: string;
+}

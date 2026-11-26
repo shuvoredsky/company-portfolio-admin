@@ -17,7 +17,11 @@ import { ApiError, Banner } from '@/lib/api/types';
 import { queryKeys } from '@/lib/queryKeys';
 
 const bannerFormSchema = z.object({
-  order: z.number().int('Order must be a whole number'),
+  order: z
+    .number({ error: 'Order must be a valid whole number' })
+    .int('Order must be a whole number')
+    .min(0, 'Order must be 0 or greater')
+    .max(9999, 'Order must not exceed 9999'),
   isActive: z.boolean(),
 });
 
@@ -82,8 +86,21 @@ export function BannerFormModal({
       );
       onClose();
     },
-    onError: (err) => {
+    onError: async (err) => {
       if (err instanceof ApiError) {
+        if (err.status === 404) {
+          toast.error('This banner no longer exists. Refreshing list...');
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.banners.adminList,
+            }),
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.stats.admin,
+            }),
+          ]);
+          onClose();
+          return;
+        }
         for (const src of err.errorSources) {
           const field = String(src.path);
           if (field === 'image') {
@@ -199,6 +216,8 @@ export function BannerFormModal({
             <Input
               id="banner-order"
               type="number"
+              min={0}
+              max={9999}
               step={1}
               hasError={Boolean(errors.order)}
               disabled={mutation.isPending}
