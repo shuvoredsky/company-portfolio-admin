@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Briefcase,
   FileText,
+  Handshake,
   Image as ImageIcon,
   Inbox,
   Mail,
@@ -67,6 +68,12 @@ export function DashboardOverview() {
       href: '/dashboard/blogs',
     },
     {
+      label: 'Networks',
+      value: stats?.counts.networks ?? 0,
+      icon: Handshake,
+      href: '/dashboard/networks',
+    },
+    {
       label: 'Recruitments',
       value: stats?.counts.recruitments ?? 0,
       icon: Briefcase,
@@ -107,9 +114,9 @@ export function DashboardOverview() {
       ) : (
         <>
           {/* Stat Cards */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {isPending
-              ? Array.from({ length: 5 }).map((_, idx) => (
+              ? Array.from({ length: 6 }).map((_, idx) => (
                   <Card key={idx}>
                     <CardContent className="p-5">
                       <div className="flex items-center justify-between">

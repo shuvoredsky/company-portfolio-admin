@@ -1,6 +1,6 @@
 # Company Portfolio — Admin Dashboard (`company-admin`)
 
-Next.js (App Router) + TypeScript + Tailwind CSS v4 admin panel for managing banners, blogs, recruitments, and contact inquiries.
+Next.js (App Router) + TypeScript + Tailwind CSS v4 admin panel for managing banners, blogs, partner networks, recruitments, and contact inquiries. Features a single-button Light/Dark theme toggle (defaulting to OS preference on first visit with zero flash).
 
 See [PLAN.md](./PLAN.md) for the full architecture and roadmap.
 

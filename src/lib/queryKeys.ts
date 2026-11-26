@@ -1,6 +1,7 @@
 import {
   BlogListParams,
   ContactListParams,
+  NetworkListParams,
   RecruitmentListParams,
 } from '@/lib/api/types';
 
@@ -19,6 +20,11 @@ export const queryKeys = {
     all: ['blogs'] as const,
     list: (params: BlogListParams) => ['blogs', 'list', params] as const,
     detail: (id: string) => ['blogs', 'detail', id] as const,
+  },
+  networks: {
+    all: ['networks'] as const,
+    list: (params: NetworkListParams) => ['networks', 'list', params] as const,
+    detail: (id: string) => ['networks', 'detail', id] as const,
   },
   recruitments: {
     all: ['recruitments'] as const,

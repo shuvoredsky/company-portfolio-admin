@@ -83,6 +83,7 @@ export interface AdminStats {
   counts: {
     banners: number;
     blogs: number;
+    networks: number;
     recruitments: number;
     contacts: number;
     unreadContacts: number;
@@ -147,5 +148,21 @@ export interface ContactListParams {
   page?: number;
   limit?: number;
   isRead?: boolean;
+  search?: string;
+}
+
+export interface Network {
+  _id: string;
+  title: string;
+  description: string;
+  image: CloudinaryImage;
+  externalUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface NetworkListParams {
+  page?: number;
+  limit?: number;
   search?: string;
 }

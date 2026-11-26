@@ -1,6 +1,7 @@
 import {
   Briefcase,
   FileText,
+  Handshake,
   Image as ImageIcon,
   LayoutDashboard,
   Mail,
@@ -31,6 +32,11 @@ export const dashboardNavItems: readonly NavItem[] = [
     icon: FileText,
   },
   {
+    label: 'Networks',
+    href: '/dashboard/networks',
+    icon: Handshake,
+  },
+  {
     label: 'Recruitment',
     href: '/dashboard/recruitments',
     icon: Briefcase,
@@ -42,4 +48,3 @@ export const dashboardNavItems: readonly NavItem[] = [
     badgeKey: 'unreadContacts',
   },
 ] as const;
-

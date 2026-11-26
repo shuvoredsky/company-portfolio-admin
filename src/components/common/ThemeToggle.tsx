@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
@@ -15,53 +15,41 @@ function useIsMounted(): boolean {
   );
 }
 
-const themeOptions = [
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
-  { value: 'system', label: 'System', icon: Monitor },
-] as const;
-
 export interface ThemeToggleProps {
   className?: string;
 }
 
 export function ThemeToggle({ className }: ThemeToggleProps) {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const mounted = useIsMounted();
 
+  const isDark = mounted && resolvedTheme === 'dark';
+  const nextTheme = isDark ? 'light' : 'dark';
+  const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Color theme"
+    <button
+      type="button"
+      onClick={() => setTheme(nextTheme)}
+      aria-label={label}
+      title={label}
       className={cn(
-        'inline-flex items-center rounded-xl border border-border bg-muted/70 p-1',
+        'inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border bg-card text-foreground shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         className,
       )}
     >
-      {themeOptions.map(({ value, label, icon: Icon }) => {
-        const isActive = mounted && theme === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={isActive}
-            aria-label={`${label} theme`}
-            title={`${label} theme`}
-            onClick={() => setTheme(value)}
-            className={cn(
-              'inline-flex h-8 w-8 min-w-8 cursor-pointer items-center justify-center rounded-lg transition-colors sm:h-8 sm:w-8',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
-              isActive
-                ? 'bg-card text-primary shadow-xs'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-          >
-            <Icon className="h-4 w-4" aria-hidden="true" />
-          </button>
-        );
-      })}
-    </div>
+      {isDark ? (
+        <Sun
+          className="h-5 w-5 transition-transform duration-200"
+          aria-hidden="true"
+        />
+      ) : (
+        <Moon
+          className="h-5 w-5 transition-transform duration-200"
+          aria-hidden="true"
+        />
+      )}
+    </button>
   );
 }
-

@@ -53,6 +53,7 @@ src/
         ├── stats.ts                  # getStats
         ├── banners.ts                # getAdminBanners, createBanner, updateBanner, deleteBanner
         ├── blogs.ts                  # getBlogs (/admin/all), getBlogById (/admin/:id), createBlog, updateBlog, deleteBlog
+        ├── networks.ts               # getNetworks (/admin/all), getNetworkById (/admin/:id), createNetwork, updateNetwork, deleteNetwork
         ├── recruitments.ts           # getAdminRecruitments, createRecruitment, updateRecruitment, deleteRecruitment
         └── contacts.ts               # getContacts, getContactById, markContactRead, deleteContact
 ```
@@ -74,8 +75,8 @@ src/
 ---
 
 ## 4. Theme System
-- `next-themes` configured with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`, and `suppressHydrationWarning` on `<html>` to eliminate flash on load.
-- `<ThemeToggle />` provides accessible `Light` / `Dark` / `System` controls with a `useSyncExternalStore` mount guard to avoid hydration mismatches.
+- `next-themes` configured with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`, and `suppressHydrationWarning` on `<html>` so first-time visitors follow their OS preference with zero flash on load.
+- `<ThemeToggle />` is a single accessible Light/Dark icon button (`Sun` in dark mode, `Moon` in light mode) using `resolvedTheme` and a `useSyncExternalStore` mount guard to avoid hydration mismatches and persist explicit `light` / `dark` choices.
 
 ---
 
@@ -108,5 +109,7 @@ src/
 | **Prompt 1** | Setup, Branding/Color System, Theme, API Layer, AuthContext, Login Page, Navbar, Placeholder Dashboard | **Done** |
 | **Prompt 2** | Dashboard Layout + Responsive Sidebar + Stats (`GET /admin/stats`) + Banner Management (CRUD + image upload) | **Done** |
 | **Prompt 3** | Blog Management (CRUD + search + pagination + image) + Recruitment Management (CRUD + toggle active) | **Done** |
-| **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Banner Recheck, Polish, Responsive/A11y QA, Final Report | **Done** |
+| **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Banner Recheck, Networks Management, Single Light/Dark Theme Toggle, Final Polish | **Done** |
+
+> **Next Step:** Public Client Frontend (`company-client`, Next.js).
 
