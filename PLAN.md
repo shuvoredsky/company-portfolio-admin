@@ -111,7 +111,7 @@ src/
 | **Prompt 2** | Dashboard Layout + Responsive Sidebar + Stats (`GET /admin/stats`) + Banner Management (CRUD + image upload) | **Done** |
 | **Prompt 3** | Blog Management (CRUD + search + pagination + image) + Recruitment Management (CRUD + toggle active) | **Done** |
 | **Prompt 4** | Contact Messages Inbox (filter/search/read/delete), Banner Recheck, Networks Management, Single Light/Dark Theme Toggle, Final Polish | **Done** |
-| **Prompt 5** | Applications Status Tracking Management (`/dashboard/applications`: CRUD, secure serial generator, copy serial, quick status toggle with optimistic updates, filters & search) | **Done** |
+| **Prompt 5** | Applications Status Tracking Management (`/dashboard/applications`: CRUD, manual uppercase serial entry, public applicant note with privacy warning, copy serial, quick status toggle with optimistic updates, filters & search) | **Done** |
 
 > **Next Step:** Public Client Frontend (`company-client`, Next.js).
 

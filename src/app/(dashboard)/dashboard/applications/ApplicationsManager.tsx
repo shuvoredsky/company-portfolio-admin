@@ -414,6 +414,11 @@ export function ApplicationsManager() {
                         <p className="text-xs text-muted-foreground">
                           {app.phone}
                         </p>
+                        {app.note ? (
+                          <p className="mt-1 line-clamp-2 break-words text-xs text-muted-foreground">
+                            {app.note}
+                          </p>
+                        ) : null}
                       </td>
 
                       <td className="px-4 py-3.5 align-middle">
@@ -501,6 +506,11 @@ export function ApplicationsManager() {
                     <p className="text-xs text-muted-foreground">
                       {app.phone} &middot; {formatDate(app.createdAt)}
                     </p>
+                    {app.note ? (
+                      <p className="line-clamp-2 break-words pt-1 text-xs text-muted-foreground">
+                        {app.note}
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">

@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CheckCircle2, Clock, Sparkles, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/ui/FormField';
@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils';
 const SERIAL_REGEX = /^[A-Z0-9][A-Z0-9-]{4,29}$/;
 const PHONE_REGEX = /^[0-9+\-\s()]+$/;
 const PASSPORT_REGEX = /^[A-Za-z0-9\s-]+$/;
-const SERIAL_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const MAX_NOTE_LENGTH = 1000;
 
 const FORM_FIELDS = [
@@ -88,16 +87,6 @@ const applicationSchema = z.object({
 });
 
 type ApplicationFormValues = z.infer<typeof applicationSchema>;
-
-function generateSecureSerial(): string {
-  const bytes = new Uint8Array(8);
-  crypto.getRandomValues(bytes);
-  let suffix = '';
-  for (let i = 0; i < bytes.length; i += 1) {
-    suffix += SERIAL_ALPHABET[bytes[i] % SERIAL_ALPHABET.length];
-  }
-  return `APP-${suffix}`;
-}
 
 export interface ApplicationFormModalProps {
   open: boolean;
@@ -192,6 +181,8 @@ export function ApplicationFormModal({
   const currentStatus = useWatch({ control, name: 'status' });
   const currentNote = useWatch({ control, name: 'note' }) ?? '';
 
+  const serialRegister = register('serialNumber');
+
   const mutation = useMutation({
     mutationFn: async (values: ApplicationFormValues) => {
       if (editing) {
@@ -270,45 +261,35 @@ export function ApplicationFormModal({
       title={isEdit ? 'Edit Application' : 'Add Application'}
       description={
         isEdit
-          ? 'Update applicant details, serial number, or status.'
+          ? 'Update applicant details, serial number, status, or applicant note.'
           : 'Create an application record and share the serial number with the applicant.'
       }
       size="lg"
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        {/* Serial Number with Generate button */}
+        {/* Manual Serial Number (auto-uppercased) */}
         <FormField
           id="app-serial"
           label="Serial Number"
           required
           error={errors.serialNumber?.message}
-          hint="Uppercase letters, digits, and hyphens (5–30 characters)."
+          hint="Type a serial number to send to the applicant. Use a mix of letters and numbers, avoid sequential numbers like 00001."
         >
-          <div className="flex items-center gap-2">
-            <Input
-              id="app-serial"
-              type="text"
-              placeholder="APP-7K9M2P4X"
-              hasError={Boolean(errors.serialNumber)}
-              className="font-mono uppercase"
-              {...register('serialNumber')}
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={() => {
-                setValue('serialNumber', generateSecureSerial(), {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                });
-              }}
-              className="shrink-0"
-            >
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              <span>Generate</span>
-            </Button>
-          </div>
+          <Input
+            id="app-serial"
+            type="text"
+            placeholder="AB-4F7K9"
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            hasError={Boolean(errors.serialNumber)}
+            className="font-mono uppercase"
+            {...serialRegister}
+            onChange={(e) => {
+              e.target.value = e.target.value.toUpperCase();
+              void serialRegister.onChange(e);
+            }}
+          />
         </FormField>
 
         {/* Required personal details */}
@@ -402,11 +383,11 @@ export function ApplicationFormModal({
           </div>
         </div>
 
-        {/* Optional fields */}
+        {/* Private optional fields */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             id="app-passport"
-            label="Passport Number (Optional)"
+            label="Passport Number (optional, private — admin only)"
             error={errors.passportNumber?.message}
           >
             <Input
@@ -420,7 +401,7 @@ export function ApplicationFormModal({
 
           <FormField
             id="app-visa"
-            label="Visa Status (Optional)"
+            label="Visa Status (optional, private — admin only)"
             error={errors.visaStatus?.message}
           >
             <Input
@@ -433,15 +414,16 @@ export function ApplicationFormModal({
           </FormField>
         </div>
 
+        {/* Public note for applicant */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <label
               htmlFor="app-note"
               className="text-sm font-medium text-foreground"
             >
-              Internal Note (Optional)
+              Note for applicant (optional, shown on the public status page)
             </label>
-            <span className="text-xs tabular-nums text-muted-foreground">
+            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
               {currentNote.length} / {MAX_NOTE_LENGTH}
             </span>
           </div>
@@ -449,10 +431,17 @@ export function ApplicationFormModal({
             id="app-note"
             rows={3}
             maxLength={MAX_NOTE_LENGTH}
-            placeholder="Private notes visible only to admins..."
+            placeholder="Next steps or message for the applicant..."
             hasError={Boolean(errors.note)}
             {...register('note')}
           />
+          <p className="flex items-start gap-1.5 text-xs text-warning">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              Anyone with the serial number can read this note. Do not include
+              personal or sensitive details.
+            </span>
+          </p>
           {errors.note ? (
             <p className="text-xs font-medium text-destructive">
               {errors.note.message}
@@ -477,4 +466,3 @@ export function ApplicationFormModal({
     </Modal>
   );
 }
-
