@@ -1,4 +1,5 @@
 import {
+  ApplicationListParams,
   BlogListParams,
   ContactListParams,
   NetworkListParams,
@@ -30,6 +31,12 @@ export const queryKeys = {
     all: ['recruitments'] as const,
     adminList: (params: RecruitmentListParams) =>
       ['recruitments', 'admin', 'list', params] as const,
+  },
+  applications: {
+    all: ['applications'] as const,
+    list: (params: ApplicationListParams) =>
+      ['applications', 'admin', 'list', params] as const,
+    detail: (id: string) => ['applications', 'admin', 'detail', id] as const,
   },
   contacts: {
     all: ['contacts'] as const,

@@ -1,5 +1,6 @@
 import {
   Briefcase,
+  ClipboardCheck,
   FileText,
   Handshake,
   Image as ImageIcon,
@@ -40,6 +41,11 @@ export const dashboardNavItems: readonly NavItem[] = [
     label: 'Recruitment',
     href: '/dashboard/recruitments',
     icon: Briefcase,
+  },
+  {
+    label: 'Applications',
+    href: '/dashboard/applications',
+    icon: ClipboardCheck,
   },
   {
     label: 'Contact Messages',

@@ -166,3 +166,48 @@ export interface NetworkListParams {
   limit?: number;
   search?: string;
 }
+
+export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+
+export interface Application {
+  _id: string;
+  serialNumber: string;
+  name: string;
+  email: string;
+  phone: string;
+  note?: string;
+  passportNumber?: string;
+  visaStatus?: string;
+  status: ApplicationStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ApplicationListParams {
+  page?: number;
+  limit?: number;
+  status?: ApplicationStatus;
+  search?: string;
+}
+
+export interface CreateApplicationPayload {
+  serialNumber: string;
+  name: string;
+  email: string;
+  phone: string;
+  note?: string;
+  passportNumber?: string;
+  visaStatus?: string;
+  status?: ApplicationStatus;
+}
+
+export interface UpdateApplicationPayload {
+  serialNumber?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  note?: string;
+  passportNumber?: string;
+  visaStatus?: string;
+  status?: ApplicationStatus;
+}
